@@ -52,7 +52,8 @@ RUN set -eux; \
     	apcu \
 		opcache \
     ;
-
+#ajout Julien Code
+RUN docker-php-ext-install pdo_mysql
 ###> recipes ###
 ###> doctrine/doctrine-bundle ###
 RUN apk add --no-cache --virtual .pgsql-deps postgresql-dev; \
@@ -124,6 +125,8 @@ RUN set -eux; \
 
 RUN rm -f .env.local.php
 
+
+
 # Caddy image
 FROM caddy:2.6-alpine AS app_caddy
 
@@ -132,3 +135,5 @@ WORKDIR /srv/app
 COPY --from=app_caddy_builder --link /usr/bin/caddy /usr/bin/caddy
 COPY --from=app_php --link /srv/app/public public/
 COPY --link docker/caddy/Caddyfile /etc/caddy/Caddyfile
+
+
