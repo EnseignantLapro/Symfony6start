@@ -136,4 +136,11 @@ COPY --from=app_caddy_builder --link /usr/bin/caddy /usr/bin/caddy
 COPY --from=app_php --link /srv/app/public public/
 COPY --link docker/caddy/Caddyfile /etc/caddy/Caddyfile
 
+# PhpMyadmin et Mysql
+FROM phpmyadmin
+
+EXPOSE 80
+
+CMD ["phpmyadmin"]  
+
 

@@ -1,15 +1,15 @@
 doctrine:
     dbal:
         dbname:               symfony
-        host:                 127.0.0.1
+        host:                 db
         port:                 3306
-        user:                 rpg
-        password:             rpg
+        user:                 root
+        password:             root
         driver:               pdo_mysql
         # if the url option is specified, it will override the above config
-        server_version:       '5.7.34'
+        server_version:       '10.3.37'
         charset:              UTF8
-        url:                  mysql://rpg:rpg@192.168.1.49:3306/symfony
+        url:                  mysql://root:root@db:3306/symfony
        
     orm:
         auto_generate_proxy_classes: true
