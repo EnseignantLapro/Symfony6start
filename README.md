@@ -1,3 +1,19 @@
+#version julien code 
+c'est une version de symfony 6 s'appuis sur docker et plusieurs conteneur dont :
+php 8.2
+mysql mariadb 10
+phpmyadmin sur apache2
+l'application symfony tourne que un server local caddy.
+Ce projet et configuré pour vscode 
+
+Pour utiliser l'application : http://localhost/ et pour phpmyadmin http://localhost:8081/
+il y a déjà une entité de créer avec son controller 
+https://localhost/service
+
+pour activer le xdebug : il faut rajouter ?XDEBUG_SESSION=VSCODE sur la page
+exemple = https://localhost/service?XDEBUG_SESSION=VSCODE
+
+
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework, with full [HTTP/2](https://symfony.com/doc/current/weblink.html), HTTP/3 and HTTPS support.
