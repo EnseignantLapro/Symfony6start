@@ -16,5 +16,28 @@
         <li>Your controller at <code><a href="{{ '/Users/Julien/symfony-docker/src/Controller/ServiceController.php'|file_link(0) }}">src/Controller/ServiceController.php</a></code></li>
         <li>Your template at <code><a href="{{ '/Users/Julien/symfony-docker/templates/service/index.html.twig'|file_link(0) }}">templates/service/index.html.twig</a></code></li>
     </ul>
+
+    <table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for medecin in medecins %}
+        <tr>
+            <td>{{ medecin.id }}</td>
+            <td>{{ medecin.nom }}</td>
+            <td>{{ medecin.prenom }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
 </div>
 {% endblock %}

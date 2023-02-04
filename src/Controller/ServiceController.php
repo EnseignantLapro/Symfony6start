@@ -29,8 +29,12 @@ class ServiceController extends AbstractController
         $entityManager->persist($unMedecin);
         $entityManager->flush();
 
-         $unMedecin = $doctrine->getRepository(Medecin::class)->find(1);
-    
+        
+        $unMedecin = $doctrine->getRepository(Medecin::class)->find(1);
+
+        $medecins = $doctrine->getRepository(Medecin::class)->findAll() ;
+         
+        
 
         if (!$unMedecin) {
             throw $this->createNotFoundException(
@@ -41,6 +45,7 @@ class ServiceController extends AbstractController
 
         return $this->render('service/index.html.twig', [
             'controller_name' => $unMedecin->getNom(),
+            'medecins' => $medecins,
         ]);
     }
 }
