@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+
 {% block title %}Hello ServiceController!{% endblock %}
 
 {% block body %}
@@ -17,7 +18,11 @@
         <li>Your template at <code><a href="{{ '/Users/Julien/symfony-docker/templates/service/index.html.twig'|file_link(0) }}">templates/service/index.html.twig</a></code></li>
     </ul>
 
-    <table>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Save</button>
+    {{ form_end(form) }}
+    <table class="table">
     <thead>
         <tr>
             <th>Id</th>
