@@ -20,7 +20,7 @@ class ServiceController extends AbstractController
 
         $entityManager = $doctrine->getManager();
         $unMedecin = new Medecin();
-        
+
         $form = $this->createForm(MedecinType::class, $unMedecin);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -35,5 +35,28 @@ class ServiceController extends AbstractController
             'medecins' => $medecins,
             'form' => $form->createView()
         ]);
+    }
+
+    #[Route('/service/delete/{id}', name: 'app_service_delete')]
+    public function delete(ManagerRegistry $doctrine, $id): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $medecin = $doctrine->getRepository(Medecin::class)->find($id);
+        $entityManager->remove($medecin);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_service');
+    }
+
+    #[Route('/service/edit/{id}', name: 'app_service_edit')]
+    public function edit(Medecin $medecin, Request $request, ManagerRegistry $doctrine): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $form = $this->createForm(MedecinType::class, $medecin);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+        }
+        return $this->redirectToRoute('app_service');
     }
 }

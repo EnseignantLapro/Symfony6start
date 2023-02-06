@@ -1,48 +1,63 @@
 {% extends 'base.html.twig' %}
 
 
-{% block title %}Hello ServiceController!{% endblock %}
+{% block title %}Hello ServiceController!
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+	<div class="container">
+		<h1>Hello
+			{{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/Users/Julien/symfony-docker/src/Controller/ServiceController.php'|file_link(0) }}">src/Controller/ServiceController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/Users/Julien/symfony-docker/templates/service/index.html.twig'|file_link(0) }}">templates/service/index.html.twig</a></code></li>
-    </ul>
+		{{ form_start(form) }}
+		{{ form_widget(form) }}
+		<button type="submit">Save</button>
+		{{ form_end(form) }}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>id</th>
+					<th>nom</th>
+					<th>prenom</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for medecin in medecins %}
+					<tr>
+						<td class="id">{{ medecin.id }}</td>
+						<td class="nom">{{ medecin.nom }}</td>
+						<td class="prenom">{{ medecin.prenom }}</td>
+						<td>
+							<a href="{{ path('app_service_delete', {'id': medecin.id}) }}" class="btn btn-danger">Supprimer</a>
+							<button class="btn btn-primary modifier" data-id="{{ medecin.id }}">Modifier</button>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit">Save</button>
-    {{ form_end(form) }}
-    <table class="table">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Nom</th>
-            <th>Prénom</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for medecin in medecins %}
-        <tr>
-            <td>{{ medecin.id }}</td>
-            <td>{{ medecin.nom }}</td>
-            <td>{{ medecin.prenom }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<script>
+    $(document).on('click', '.modifier', function () {
+        var $tr = $(this).closest('tr');
+        var nom = $tr.find('.nom').text();
+        var prenom = $tr.find('.prenom').text();
+        var id = $tr.find('.id').text();
 
-
-
-
-</div>
+        $tr.html(`
+            <td class="nom" colspan="4">
+                <form name="medecin" method="post" action="/service/edit/${id}">
+                    <label name="medecin[id]">${id}</label>
+                    <input type="text" name="medecin[nom]" value="${nom}">
+                    <input type="text" name="medecin[prenom]" value="${prenom}">
+                    <input type="hidden" name="XDEBUG_SESSION" value ="VSCODE">
+                    <button type="submit" class="btn btn-info" data-id="${id}">Mettre à jour</button>
+                
+                </form>
+            </td>
+        `);
+    });
+</script>
+	</div>
 {% endblock %}
