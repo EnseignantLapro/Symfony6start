@@ -6,29 +6,56 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Doodle;
 
 class ApiController extends AbstractController
 {
-    
-    #[Route('/api', name: 'app_api')]
-    public function enregistrer(Request $request)
-    {
-        $data = json_decode($request->getContent(), true);
-        // Insérer les données dans la base de données ou dans un fichier
-        return new Response($request->getContent(), 200);
-    }
 
-    #[Route('/api/postCalendar', name: 'app_postCalendar')]
-    public function postCalendar(Request $request)
-    {
-        $data = json_decode($request->getContent(), true);
-        // Insérer les données dans la base de données ou dans un fichier
-        return new Response($request->getContent(), 200);
+  #[Route('/api', name: 'app_api')]
+  public function enregistrer(Request $request)
+  {
+    $data = json_decode($request->getContent(), true);
+    // Insérer les données dans la base de données ou dans un fichier
+    return new Response($request->getContent(), 200);
+  }
+
+  #[Route('/api/postCalendar', name: 'app_postCalendar')]
+  public function postCalendar(Request $request)
+  {
+    $data = json_decode($request->getContent(), true);
+    // Insérer les données dans la base de données ou dans un fichier
+    return new Response($request->getContent(), 200);
+  }
+  #[Route('/api/getAllCalendarByID', name: 'app_getAllCalendarByID')]
+  public function getAllCalendarByID(ManagerRegistry $doctrine, Request $request)
+  {
+    $doodleRepository = $doctrine->getRepository(Doodle::class);
+    $doodle = $doodleRepository->findOneBy(['dateHash' => 'lfo3fyxw']);
+    $userDoodle = $doodle->getUserDoodles();
+    $userDoodle->toArray(); // obligatoire si on veux charger les données
+    $calendrier = '';
+    $first = true;
+    foreach ($userDoodle as $userD) {
+      if(!$first){
+        $calendrier.=',';
+      }
+      
+      $user = $userD->getIdUser();
+      $calendrier.= '{"user": "'.$userD->getUserName().'",';
+      $calendrier.= '"color": "'.$userD->getUserColor().'",';
+      $calendrier.= '"weeks":';
+      $calendrier.= $userD->getCalendrier();
+      $calendrier.= '}';
+      $first= false;
     }
-    #[Route('/api/getAllCalendarByID', name: 'app_getAllCalendarByID')]
-    public function getAllCalendarByID(Request $request)
-    {
-        $data = '[
+ 
+    $data = '['.$calendrier.']';
+
+    /*
+    FORMAT ATTENDU PAR LE FRONT
+    
+    $data = '[
             {
               "user": "Julien",
               "color":"#1FF012",
@@ -113,9 +140,7 @@ class ApiController extends AbstractController
               ]
             }
           ]';
-         
-          return  new Response($data, 200);
-    }
+*/
+    return  new Response($data, 200);
+  }
 }
-
-

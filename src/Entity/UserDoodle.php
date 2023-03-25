@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserDoodleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserDoodleRepository::class)]
@@ -31,12 +32,13 @@ class UserDoodle
     #[ORM\OneToMany(mappedBy: 'idUserDoodle', targetEntity: Week::class)]
     private Collection $weeks;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $calendrier = null;
+
     public function __construct()
     {
         $this->weeks = new ArrayCollection();
     }
-
-   
 
     public function getId(): ?int
     {
@@ -117,6 +119,18 @@ class UserDoodle
                 $week->setIdUserDoodle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCalendrier(): ?string
+    {
+        return $this->calendrier;
+    }
+
+    public function setCalendrier(?string $calendrier): self
+    {
+        $this->calendrier = $calendrier;
 
         return $this;
     }
