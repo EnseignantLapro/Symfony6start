@@ -20,40 +20,85 @@ class ApiController extends AbstractController
     return new Response($request->getContent(), 200);
   }
 
-  #[Route('/api/postCalendar', name: 'app_postCalendar')]
-  public function postCalendar(Request $request)
+  #[Route('/api/postCalendar/{dateHash}', name: 'app_postCalendar')]
+  public function postCalendar(ManagerRegistry $doctrine, Request $request, $dateHash)
   {
     $data = json_decode($request->getContent(), true);
+
+    $doodleRepository = $doctrine->getRepository(Doodle::class);
+    $doodle = $doodleRepository->findOneBy(['dateHash' => $dateHash]);
+    $userDoodles = $doodle->getUserDoodles();
+    $userDoodles->toArray(); // obligatoire si on veut charger les données
+
+
+    foreach ($userDoodles as $userDoodle) {
+      if ($userDoodle->getUserName() === $data["user"]) {
+        $userDoodle->setCalendrier(json_encode($data['weeks']));
+        break;
+      }
+    }
+
+    /*FORMAT de la case :
+                                 [   {
+                  "week": "19/03/2023",
+                  "selectedCases": ["Mardi-Matin", "Mardi-Midi", "Mercredi-Midi", "Mercredi-Aprem"]
+                },
+                {
+                  "week": "26/03/2023",
+                  "selectedCases": ["Vendredi-Matin", "Vendredi-Midi", "Vendredi-Aprem"]
+                }
+              ] */
+
+
+    // Enregistrer les modifications dans la base de données
+    $entityManager = $doctrine->getManager();
+    $entityManager->flush();
+
     // Insérer les données dans la base de données ou dans un fichier
     return new Response($request->getContent(), 200);
   }
-  #[Route('/api/getAllCalendarByID', name: 'app_getAllCalendarByID')]
-  public function getAllCalendarByID(ManagerRegistry $doctrine, Request $request)
+
+
+  #[Route('/api/getAllCalendarByID/{dateHash}', name: 'app_getAllCalendarByID')]
+  public function getAllCalendarByID(ManagerRegistry $doctrine, Request $request, $dateHash)
   {
     $doodleRepository = $doctrine->getRepository(Doodle::class);
-    $doodle = $doodleRepository->findOneBy(['dateHash' => 'lfo3fyxw']);
+    $doodle = $doodleRepository->findOneBy(['dateHash' => $dateHash]);
     $userDoodle = $doodle->getUserDoodles();
     $userDoodle->toArray(); // obligatoire si on veux charger les données
     $calendrier = '';
     $first = true;
     foreach ($userDoodle as $userD) {
-      if(!$first){
-        $calendrier.=',';
+      if (!$first) {
+        $calendrier .= ',';
       }
-      
-      $user = $userD->getIdUser();
-      $calendrier.= '{"user": "'.$userD->getUserName().'",';
-      $calendrier.= '"color": "'.$userD->getUserColor().'",';
-      $calendrier.= '"weeks":';
-      $calendrier.= $userD->getCalendrier();
-      $calendrier.= '}';
-      $first= false;
+
+
+      $calendrier .= '{"user": "' . $userD->getUserName() . '",';
+      $calendrier .= '"color": "' . $userD->getUserColor() . '",';
+      $calendrier .= '"weeks":';
+      $calendrier .= $userD->getCalendrier();
+      $calendrier .= '}';
+      $first = false;
     }
- 
-    $data = '['.$calendrier.']';
+
+    $data = '[' . $calendrier . ']';
 
     /*
-    FORMAT ATTENDU PAR LE FRONT
+FORMAT de la case :
+                                 [   {
+                  "week": "19/03/2023",
+                  "selectedCases": ["Mardi-Matin", "Mardi-Midi", "Mercredi-Midi", "Mercredi-Aprem"]
+                },
+                {
+                  "week": "26/03/2023",
+                  "selectedCases": ["Vendredi-Matin", "Vendredi-Midi", "Vendredi-Aprem"]
+                }
+              ]
+
+
+
+    FORMAT TOTAL ATTENDU PAR LE FRONT
     
     $data = '[
             {
